@@ -600,9 +600,17 @@ function App() {
             </p>
             
             <p style={{ margin: "0 0 0 0" }}>
-              <strong>Preventing Mono-ization:</strong> When audio is converted to mono (like on mobile devices 
-              or certain playback systems), true stereo content can be lost or distorted. Understanding your 
-              stereo content helps ensure your mix translates well across all playback systems.
+              <strong>Preventing Mono-ization:</strong> There isn't a single point of failure, but here are some common issues to watch for:
+            </p>
+            
+            <p style={{ margin: "10px 0 0 0", paddingLeft: "20px" }}>
+              <strong>– Importing a Stereo Mix Incorrectly</strong><br/>
+              If stereo audio is accidentally placed on two separate mono tracks, each channel (left and right) will default to center pan. This causes them to be summed at the master bus, collapsing the stereo image into mono and sending an identical signal through both sides of the stereo output.
+            </p>
+            
+            <p style={{ margin: "10px 0 0 0", paddingLeft: "20px" }}>
+              <strong>– Mismatched Output Settings</strong><br/>
+              At the export or conform stage, avoid selecting "Dual Mono" or any output setting other than "Stereo." Always ensure the final output format matches the source media's channel configuration.
             </p>
           </div>
         )}
