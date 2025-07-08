@@ -10,6 +10,7 @@ function App() {
   const [analysisResult, setAnalysisResult] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analyzingSection, setAnalyzingSection] = useState(null);
+  const [showLearnMore, setShowLearnMore] = useState(false);
 
   const videoRef = useRef();
   const audioRef = useRef();
@@ -552,18 +553,59 @@ function App() {
         borderTop: "1px solid #eee",
         textAlign: "center"
       }}>
-        <a 
-          href="https://www.dropbox.com/scl/fi/l2ackm6wqaa1ybna12exy/Preventing-Mono-ization-of-Final-Audio.paper?rlkey=4ll4s71g8m4e51rgr61i47zkp&dl=0"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          onClick={() => setShowLearnMore(!showLearnMore)}
           style={{
-            color: "#0070f3",
-            textDecoration: "none",
-            fontSize: "14px"
+            background: "none",
+            border: "none",
+            color: "#000000",
+            cursor: "pointer",
+            fontSize: "14px",
+            textDecoration: "underline"
           }}
         >
-          Learn more about stereo analysis and preventing mono-ization →
-        </a>
+          {showLearnMore ? "Hide details" : "Learn more about stereo analysis →"}
+        </button>
+        
+        {showLearnMore && (
+          <div style={{
+            marginTop: "20px",
+            padding: "20px",
+            backgroundColor: "#f8f9fa",
+            borderRadius: "8px",
+            textAlign: "left",
+            fontSize: "14px",
+            lineHeight: "1.6"
+          }}>
+            <h3 style={{ margin: "0 0 15px 0", color: "#333" }}>
+              Understanding Stereo Analysis
+            </h3>
+            
+            <p style={{ margin: "0 0 15px 0" }}>
+              <strong>Phase Cancellation Technique:</strong> This tool uses a classic audio engineering method 
+              to detect true stereo content. By inverting one channel and summing it with the other, we can 
+              determine if audio is effectively mono or contains genuine stereo information.
+            </p>
+            
+            <p style={{ margin: "0 0 15px 0" }}>
+              <strong>Why This Matters:</strong> Many audio files appear stereo but are actually mono content 
+              duplicated to both channels. True stereo content has different information in the left and right 
+              channels, which creates spatial depth and width.
+            </p>
+            
+            <p style={{ margin: "0 0 15px 0" }}>
+              <strong>Multi-Section Analysis:</strong> Our tool samples from the beginning, middle, and end 
+              of your audio file to provide comprehensive analysis. This catches stereo content that might only 
+              appear in certain sections of your track.
+            </p>
+            
+            <p style={{ margin: "0 0 0 0" }}>
+              <strong>Preventing Mono-ization:</strong> When audio is converted to mono (like on mobile devices 
+              or certain playback systems), true stereo content can be lost or distorted. Understanding your 
+              stereo content helps ensure your mix translates well across all playback systems.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

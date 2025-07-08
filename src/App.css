@@ -12,7 +12,8 @@ body {
 }
 
 .app-logo {
-  width: 500px;
+  width: 700px;
+  max-width: 100%;
   margin-bottom: 20px;
 }
 
@@ -34,7 +35,7 @@ h1 {
 }
 
 .drag-drop-area {
-  border: 3px dashed #0070f3;
+  border: 3px dashed #000000;
   padding: 60px 20px;
   margin-bottom: 30px;
   cursor: pointer;
