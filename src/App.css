@@ -18,8 +18,7 @@ body {
 
 
 .App {
-  max-width: 1000
-;
+  max-width: 700px;
   width: 100%;
   background: white;
   padding: 30px 40px;
@@ -51,7 +50,7 @@ h1 {
 video,
 audio {
   width: 100%;       /* Make it fill container width */
-  max-width: 1000px;  /* Increase max width */
+  max-width: 700px;  /* Match container max width */
   height: auto;      /* Keep aspect ratio */
   margin-bottom: 30px;
   border-radius: 8px;
@@ -77,4 +76,13 @@ button:hover {
 button:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes pulse {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
