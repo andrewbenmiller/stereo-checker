@@ -9,6 +9,7 @@ function App() {
   const [renderHack, setRenderHack] = useState(0); // 👈 used to trigger re-render
   const [analysisResult, setAnalysisResult] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analyzingSection, setAnalyzingSection] = useState(null);
 
   const videoRef = useRef();
   const audioRef = useRef();
@@ -184,113 +185,157 @@ function App() {
 
       const audioContext = audioContextRef.current;
       const sourceNode = sourceNodeRef.current;
-
-      // Create analyzer node for measuring signal
-      const analyzer = audioContext.createAnalyser();
-      analyzer.fftSize = 2048;
-      analyzer.smoothingTimeConstant = 0.8;
-      analyzerRef.current = analyzer;
-
-      // Create channel splitter to separate left and right
-      const splitter = audioContext.createChannelSplitter(2);
-      
-      // Create gain nodes for left and right channels
-      const leftGain = audioContext.createGain();
-      const rightGain = audioContext.createGain();
-      
-      // Invert the right channel (phase cancellation)
-      rightGain.gain.value = -1;
-      leftGain.gain.value = 1;
-      
-      // Create merger to sum the channels
-      const merger = audioContext.createChannelMerger(1);
-      
-      // Connect the chain: source -> splitter -> gains -> merger -> analyzer
-      sourceNode.disconnect();
-      sourceNode.connect(splitter);
-      splitter.connect(leftGain, 0);
-      splitter.connect(rightGain, 1);
-      leftGain.connect(merger, 0, 0);
-      rightGain.connect(merger, 0, 0);
-      merger.connect(analyzer);
-      
-      // Don't connect to destination - we just want to analyze
-      
-      // Get the media element and restart it for analysis
       let mediaElement = fileType === "video" ? videoRef.current : audioRef.current;
-      const currentTime = mediaElement.currentTime;
-      mediaElement.currentTime = 0;
-      mediaElement.play();
-
-      // Analyze the signal for a few seconds
-      const bufferLength = analyzer.frequencyBinCount;
-      const dataArray = new Uint8Array(bufferLength);
       
+      // Get file duration
+      const duration = mediaElement.duration;
+      if (!duration || duration < 3) {
+        alert("File is too short for comprehensive analysis. Need at least 3 seconds.");
+        setIsAnalyzing(false);
+        return;
+      }
+
+      // Define analysis points: beginning, middle, end
+      const analysisPoints = [
+        { name: "Beginning", time: 1 }, // 1 second in
+        { name: "Middle", time: duration / 2 }, // Middle of file
+        { name: "End", time: duration - 2 } // 2 seconds before end
+      ];
+
       let totalEnergy = 0;
       let sampleCount = 0;
-      const analysisDuration = 3000; // 3 seconds
-      const startTime = Date.now();
+      const analysisDuration = 1000; // 1 second per sample
+      const threshold = 5;
 
-      const analyzeFrame = () => {
-        if (Date.now() - startTime > analysisDuration) {
-          // Analysis complete
-          const averageEnergy = totalEnergy / sampleCount;
-          const threshold = 5; // Lowered threshold for more sensitive detection
-          
-          // Improved confidence calculation
-          let confidence;
-          if (averageEnergy > threshold) {
-            // Stereo detected - confidence based on how much above threshold
-            const stereoStrength = Math.min(averageEnergy / 20, 1); // Normalize to 0-1
-            confidence = Math.round(80 + (stereoStrength * 20)); // 80-100% range
-          } else {
-            // Mono detected - confidence based on how close to zero
-            const monoStrength = Math.max(0, 1 - (averageEnergy / threshold));
-            confidence = Math.round(80 + (monoStrength * 20)); // 80-100% range
-          }
-          
-          const result = {
-            isStereo: averageEnergy > threshold,
-            averageEnergy: averageEnergy,
-            threshold: threshold,
-            confidence: confidence
-          };
-          
-          setAnalysisResult(result);
-          setIsAnalyzing(false);
-          
-          // Restore original playback
-          mediaElement.pause();
-          mediaElement.currentTime = currentTime;
-          
-          // Restore original connections
-          sourceNode.disconnect();
-          if (isMono) {
-            sourceNode.connect(monoGainRef.current);
-            monoGainRef.current.connect(audioContext.destination);
-          } else {
-            sourceNode.connect(stereoGainRef.current);
-            stereoGainRef.current.connect(audioContext.destination);
-          }
-          
-          return;
-        }
-
-        analyzer.getByteFrequencyData(dataArray);
+      // Analyze each section
+      for (let i = 0; i < analysisPoints.length; i++) {
+        const point = analysisPoints[i];
+        setAnalyzingSection(point.name);
         
-        // Calculate RMS (Root Mean Square) of the signal
-        let sum = 0;
-        for (let i = 0; i < bufferLength; i++) {
-          sum += dataArray[i] * dataArray[i];
-        }
-        const rms = Math.sqrt(sum / bufferLength);
-        totalEnergy += rms;
-        sampleCount++;
+        // Create analyzer node for measuring signal
+        const analyzer = audioContext.createAnalyser();
+        analyzer.fftSize = 2048;
+        analyzer.smoothingTimeConstant = 0.8;
+        analyzerRef.current = analyzer;
 
-        requestAnimationFrame(analyzeFrame);
-      };
+        // Create channel splitter to separate left and right
+        const splitter = audioContext.createChannelSplitter(2);
+        
+        // Create gain nodes for left and right channels
+        const leftGain = audioContext.createGain();
+        const rightGain = audioContext.createGain();
+        
+        // Invert the right channel (phase cancellation)
+        rightGain.gain.value = -1;
+        leftGain.gain.value = 1;
+        
+        // Create merger to sum the channels
+        const merger = audioContext.createChannelMerger(1);
+        
+        // Connect the chain: source -> splitter -> gains -> merger -> analyzer
+        sourceNode.disconnect();
+        sourceNode.connect(splitter);
+        splitter.connect(leftGain, 0);
+        splitter.connect(rightGain, 1);
+        leftGain.connect(merger, 0, 0);
+        rightGain.connect(merger, 0, 0);
+        merger.connect(analyzer);
+        
+        // Seek to analysis point and play
+        mediaElement.currentTime = point.time;
+        mediaElement.play();
 
-      analyzeFrame();
+        // Analyze this section
+        const bufferLength = analyzer.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+        
+        let sectionEnergy = 0;
+        let sectionSamples = 0;
+        const startTime = Date.now();
+
+        const analyzeSection = () => {
+          if (Date.now() - startTime > analysisDuration) {
+            // Section analysis complete
+            const averageSectionEnergy = sectionEnergy / sectionSamples;
+            totalEnergy += averageSectionEnergy;
+            sampleCount++;
+            
+            // Clean up this section's nodes
+            analyzer.disconnect();
+            splitter.disconnect();
+            leftGain.disconnect();
+            rightGain.disconnect();
+            merger.disconnect();
+            
+            // Move to next section or finish
+            if (i < analysisPoints.length - 1) {
+              // Continue to next section
+              setTimeout(() => {
+                // This will continue the loop
+              }, 100);
+            } else {
+              // All sections analyzed
+              const averageEnergy = totalEnergy / sampleCount;
+              
+              // Improved confidence calculation
+              let confidence;
+              if (averageEnergy > threshold) {
+                // Stereo detected - confidence based on how much above threshold
+                const stereoStrength = Math.min(averageEnergy / 20, 1);
+                confidence = Math.round(80 + (stereoStrength * 20));
+              } else {
+                // Mono detected - confidence based on how close to zero
+                const monoStrength = Math.max(0, 1 - (averageEnergy / threshold));
+                confidence = Math.round(80 + (monoStrength * 20));
+              }
+              
+              const result = {
+                isStereo: averageEnergy > threshold,
+                averageEnergy: averageEnergy,
+                threshold: threshold,
+                confidence: confidence,
+                sectionsAnalyzed: analysisPoints.length
+              };
+              
+              setAnalysisResult(result);
+              setIsAnalyzing(false);
+              
+              // Restore original playback
+              mediaElement.pause();
+              mediaElement.currentTime = 0;
+              
+              // Restore original connections
+              sourceNode.disconnect();
+              if (isMono) {
+                sourceNode.connect(monoGainRef.current);
+                monoGainRef.current.connect(audioContext.destination);
+              } else {
+                sourceNode.connect(stereoGainRef.current);
+                stereoGainRef.current.connect(audioContext.destination);
+              }
+            }
+            return;
+          }
+
+          analyzer.getByteFrequencyData(dataArray);
+          
+          // Calculate RMS (Root Mean Square) of the signal
+          let sum = 0;
+          for (let j = 0; j < bufferLength; j++) {
+            sum += dataArray[j] * dataArray[j];
+          }
+          const rms = Math.sqrt(sum / bufferLength);
+          sectionEnergy += rms;
+          sectionSamples++;
+
+          requestAnimationFrame(analyzeSection);
+        };
+
+        analyzeSection();
+        
+        // Wait for this section to complete before moving to next
+        await new Promise(resolve => setTimeout(resolve, analysisDuration + 200));
+      }
 
     } catch (error) {
       console.error("Analysis error:", error);
@@ -404,6 +449,11 @@ function App() {
       {isAnalyzing && (
         <div style={{ marginTop: "15px", textAlign: "center" }}>
           <p>Analyzing stereo content...</p>
+          {analyzingSection && (
+            <p style={{ fontSize: "14px", color: "#666", marginBottom: "10px" }}>
+              Currently analyzing: <strong>{analyzingSection}</strong>
+            </p>
+          )}
           <div style={{ 
             width: "100%", 
             height: "4px", 
@@ -449,6 +499,9 @@ function App() {
           <p style={{ margin: "5px 0", fontSize: "12px", color: "#666" }}>
             <strong>Technical:</strong> Average energy: {analysisResult.averageEnergy.toFixed(2)} 
             (threshold: {analysisResult.threshold})
+          </p>
+          <p style={{ margin: "5px 0", fontSize: "12px", color: "#666" }}>
+            <strong>Analysis:</strong> {analysisResult.sectionsAnalyzed} sections sampled (beginning, middle, end)
           </p>
         </div>
       )}
