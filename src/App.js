@@ -372,7 +372,13 @@ function App() {
 
   return (
     <div className="App">
-      <img src={logo} alt="Logo" className="app-logo" />
+      <div 
+        onClick={() => window.location.reload()} 
+        style={{ cursor: "pointer" }}
+        title="Click to refresh page"
+      >
+        <img src={logo} alt="Logo" className="app-logo" />
+      </div>
       <h1>Stereo Checker</h1>
 
       <div
@@ -538,6 +544,27 @@ function App() {
             Start Audio
           </button>
         )}
+
+      {/* Learn more link */}
+      <div style={{ 
+        marginTop: "40px", 
+        paddingTop: "20px", 
+        borderTop: "1px solid #eee",
+        textAlign: "center"
+      }}>
+        <a 
+          href="https://www.dropbox.com/scl/fi/l2ackm6wqaa1ybna12exy/Preventing-Mono-ization-of-Final-Audio.paper?rlkey=4ll4s71g8m4e51rgr61i47zkp&dl=0"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            color: "#0070f3",
+            textDecoration: "none",
+            fontSize: "14px"
+          }}
+        >
+          Learn more about stereo analysis and preventing mono-ization →
+        </a>
+      </div>
     </div>
   );
 }
