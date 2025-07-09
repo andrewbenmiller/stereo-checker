@@ -132,7 +132,8 @@ function App() {
     stereoGain.connect(audioContext.destination);
     setIsMono(false);
 
-    mediaElement.play();
+    // Don't auto-play - let user control playback
+    // mediaElement.play();
 
     // Cleanup: disconnect nodes but DO NOT close audio context
     return () => {
@@ -412,31 +413,10 @@ function App() {
 
       {fileUrl && (
         <button
-          onClick={toggleMono}
-          style={{ 
-            marginTop: "20px", 
-            padding: "10px",
-            backgroundColor: "#000000",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "16px",
-            fontWeight: "bold",
-            width: "200px"
-          }}
-        >
-          {isMono ? "Switch to Stereo" : "Switch to Mono"}
-        </button>
-      )}
-
-      {/* Analyze button */}
-      {fileUrl && (
-        <button
           onClick={analyzeStereo}
           disabled={isAnalyzing}
           style={{ 
-            marginTop: "10px", 
+            marginTop: "20px", 
             padding: "10px",
             backgroundColor: isAnalyzing ? "#ccc" : "#000000",
             color: "white",
@@ -449,6 +429,26 @@ function App() {
           }}
         >
           {isAnalyzing ? "Analyzing..." : "Analyze Stereo Content"}
+        </button>
+      )}
+
+      {fileUrl && (
+        <button
+          onClick={toggleMono}
+          style={{ 
+            marginTop: "10px", 
+            padding: "10px",
+            backgroundColor: "#000000",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "16px",
+            fontWeight: "bold",
+            width: "200px"
+          }}
+        >
+          {isMono ? "Listen in Stereo" : "Listen in Mono"}
         </button>
       )}
 
@@ -614,6 +614,18 @@ function App() {
             </p>
           </div>
         )}
+      </div>
+
+      {/* Copyright footer */}
+      <div style={{ 
+        marginTop: "30px", 
+        paddingTop: "20px", 
+        borderTop: "1px solid #eee",
+        textAlign: "center",
+        fontSize: "12px",
+        color: "#666"
+      }}>
+        © 2025 Glue Factory Music. All rights reserved.
       </div>
     </div>
   );
