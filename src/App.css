@@ -35,15 +35,20 @@ body {
 /* Mobile responsive design */
 @media (max-width: 768px) {
   body {
-    padding: 10px;
+    padding: 0;
+    margin: 0;
+    overflow-x: hidden;
   }
   
   .App {
-    padding: 20px;
+    padding: 15px;
     margin: 0;
     border-radius: 0;
     box-shadow: none;
     min-height: 100vh;
+    max-width: 100vw;
+    width: 100vw;
+    box-sizing: border-box;
   }
   
   .app-logo {
@@ -77,12 +82,37 @@ body {
   audio {
     width: 100% !important;
     height: 60px !important; /* Larger touch targets for mobile */
+    max-width: 100vw;
+  }
+  
+  /* Ensure content fits within mobile viewport */
+  .drag-drop-area {
+    max-width: calc(100vw - 30px);
+    box-sizing: border-box;
+  }
+  
+  /* Mobile button container */
+  .button-container {
+    max-width: calc(100vw - 30px);
+    box-sizing: border-box;
   }
   
   /* Improve touch targets for mobile */
   input[type="file"] {
     min-height: 48px;
     touch-action: manipulation;
+  }
+  
+  /* Prevent horizontal overflow on mobile */
+  * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Ensure images don't overflow */
+  img {
+    max-width: 100%;
+    height: auto;
   }
   
   video,

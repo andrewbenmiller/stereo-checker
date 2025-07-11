@@ -412,6 +412,7 @@ function App() {
         className="drag-drop-area"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
+        style={{ position: "relative" }}
       >
         <p>Drag & drop audio or video file here</p>
         <p style={{ fontSize: "14px", color: "#666", marginTop: "10px" }}>
@@ -423,10 +424,13 @@ function App() {
           onChange={handleFileSelect}
           style={{
             position: "absolute",
+            top: 0,
+            left: 0,
             opacity: 0,
             width: "100%",
             height: "100%",
-            cursor: "pointer"
+            cursor: "pointer",
+            zIndex: 1
           }}
         />
       </div>
@@ -469,14 +473,17 @@ function App() {
 
       {/* Button container */}
       {fileUrl && (
-        <div style={{ 
-          marginTop: "20px", 
-          display: "flex", 
-          gap: "10px", 
-          justifyContent: "center",
-          flexWrap: "wrap",
-          flexDirection: window.innerWidth <= 768 ? "column" : "row"
-        }}>
+        <div 
+          className="button-container"
+          style={{ 
+            marginTop: "20px", 
+            display: "flex", 
+            gap: "10px", 
+            justifyContent: "center",
+            flexWrap: "wrap",
+            flexDirection: window.innerWidth <= 768 ? "column" : "row"
+          }}
+        >
           {/* Analyze button */}
           <button
             onClick={analyzeStereo}
