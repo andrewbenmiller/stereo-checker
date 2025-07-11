@@ -141,6 +141,17 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    -webkit-playsinline: true;
+    playsinline: true;
+  }
+  
+  /* Disable fullscreen for video elements */
+  video::-webkit-media-controls-fullscreen-button {
+    display: none !important;
+  }
+  
+  video::-webkit-media-controls-play-button {
+    -webkit-appearance: none;
   }
   
   video,

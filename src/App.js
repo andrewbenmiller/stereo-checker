@@ -112,6 +112,26 @@ function App() {
   useEffect(() => {
     if (!fileUrl) return;
 
+    // Prevent fullscreen on mobile for video elements
+    const preventFullscreen = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    };
+
+    const videoElement = videoRef.current;
+    if (videoElement) {
+      // Disable fullscreen methods
+      videoElement.requestFullscreen = null;
+      videoElement.webkitRequestFullscreen = null;
+      videoElement.mozRequestFullScreen = null;
+      videoElement.msRequestFullscreen = null;
+      
+      // Add event listeners to prevent fullscreen
+      videoElement.addEventListener('webkitbeginfullscreen', preventFullscreen);
+      videoElement.addEventListener('webkitendfullscreen', preventFullscreen);
+    }
+
     // Create audio context once if it doesn't exist
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
@@ -181,6 +201,13 @@ function App() {
       if (analyzerRef.current) {
         analyzerRef.current.disconnect();
         analyzerRef.current = null;
+      }
+      
+      // Clean up video fullscreen prevention
+      const videoElement = videoRef.current;
+      if (videoElement) {
+        videoElement.removeEventListener('webkitbeginfullscreen', preventFullscreen);
+        videoElement.removeEventListener('webkitendfullscreen', preventFullscreen);
       }
     };
   }, [fileUrl, fileType]);
@@ -447,7 +474,15 @@ function App() {
           ref={videoRef}
           src={fileUrl}
           controls
+          playsInline
+          webkit-playsinline="true"
           style={{ maxWidth: "100%" }}
+          onPlay={(e) => {
+            // Prevent fullscreen on mobile
+            if (e.target.requestFullscreen) {
+              e.target.requestFullscreen = null;
+            }
+          }}
         />
       )}
 
