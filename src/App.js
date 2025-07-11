@@ -32,6 +32,7 @@ function App() {
     const file = event.target.files[0];
     if (!file) return;
     
+    console.log("File selected:", file.name, file.type, file.size);
     handleFile(file);
   };
 
@@ -453,8 +454,9 @@ function App() {
         </p>
         <input
           type="file"
-          accept="audio/*,video/*"
+          accept="audio/*,video/*,.wav,.mp3,.m4a,.aac,.flac,.ogg,.wma,.aiff,.alac"
           onChange={handleFileSelect}
+          capture="environment"
           style={{
             position: "absolute",
             top: 0,

@@ -112,6 +112,18 @@ body {
   input[type="file"] {
     min-height: 48px;
     touch-action: manipulation;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+  
+  /* Ensure file input is accessible on mobile */
+  input[type="file"]::-webkit-file-upload-button {
+    visibility: hidden;
+  }
+  
+  input[type="file"]::-moz-file-upload-button {
+    visibility: hidden;
   }
   
   /* Prevent horizontal overflow on mobile */
