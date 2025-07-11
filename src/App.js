@@ -24,6 +24,18 @@ function App() {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
     if (!file) return;
+    
+    handleFile(file);
+  };
+
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    handleFile(file);
+  };
+
+  const handleFile = (file) => {
 
     // Reset analysis state
     setAnalysisResult(null);
@@ -402,6 +414,21 @@ function App() {
         onDragOver={handleDragOver}
       >
         <p>Drag & drop audio or video file here</p>
+        <p style={{ fontSize: "14px", color: "#666", marginTop: "10px" }}>
+          Or click to select a file
+        </p>
+        <input
+          type="file"
+          accept="audio/*,video/*"
+          onChange={handleFileSelect}
+          style={{
+            position: "absolute",
+            opacity: 0,
+            width: "100%",
+            height: "100%",
+            cursor: "pointer"
+          }}
+        />
       </div>
 
       {fileUrl && fileType === "video" && (
@@ -435,6 +462,7 @@ function App() {
             }}
             onTimeUpdate={handleTimeUpdate}
             onLoadedMetadata={handleLoadedMetadata}
+            preload="metadata"
           />
         </div>
       )}
@@ -446,7 +474,8 @@ function App() {
           display: "flex", 
           gap: "10px", 
           justifyContent: "center",
-          flexWrap: "wrap"
+          flexWrap: "wrap",
+          flexDirection: window.innerWidth <= 768 ? "column" : "row"
         }}>
           {/* Analyze button */}
           <button
