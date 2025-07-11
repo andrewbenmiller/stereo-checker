@@ -147,15 +147,6 @@ body {
     height: auto;
   }
   
-  /* Mobile/Desktop text switching */
-  .desktop-text {
-    display: block;
-  }
-  
-  .mobile-text {
-    display: none;
-  }
-  
   /* Prevent fullscreen triggers on mobile */
   button {
     -webkit-user-select: none;
@@ -189,6 +180,15 @@ body {
     margin-bottom: 20px;
     border-radius: 6px;
   }
+}
+
+/* Desktop text switching (default) */
+.desktop-text {
+  display: block;
+}
+
+.mobile-text {
+  display: none;
 }
 
 h1 {
