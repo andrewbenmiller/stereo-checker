@@ -449,8 +449,9 @@ function App() {
         onDragOver={handleDragOver}
         style={{ position: "relative" }}
       >
-        <p>Drag & drop audio or video file here</p>
-        <p style={{ fontSize: "14px", color: "#666", marginTop: "10px" }}>
+        <p className="desktop-text">Drag & drop audio or video file here</p>
+        <p className="mobile-text">Click to select audio or video file</p>
+        <p className="desktop-text" style={{ fontSize: "14px", color: "#666", marginTop: "10px" }}>
           Or click to select a file
         </p>
         <input

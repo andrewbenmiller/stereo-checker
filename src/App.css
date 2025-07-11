@@ -91,6 +91,15 @@ body {
     box-sizing: border-box;
   }
   
+  /* Mobile text switching */
+  .desktop-text {
+    display: none;
+  }
+  
+  .mobile-text {
+    display: block;
+  }
+  
   /* Mobile button container */
   .button-container {
     max-width: calc(100vw - 30px);
@@ -136,6 +145,15 @@ body {
   img {
     max-width: 100%;
     height: auto;
+  }
+  
+  /* Mobile/Desktop text switching */
+  .desktop-text {
+    display: block;
+  }
+  
+  .mobile-text {
+    display: none;
   }
   
   /* Prevent fullscreen triggers on mobile */
