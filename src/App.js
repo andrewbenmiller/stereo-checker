@@ -179,7 +179,8 @@ function App() {
     stereoGain.connect(audioContext.destination);
     setIsMono(false);
 
-    mediaElement.play();
+    // Don't auto-play - let user control playback
+    // mediaElement.play();
 
     // Cleanup: disconnect nodes but DO NOT close audio context
     return () => {
@@ -470,21 +471,27 @@ function App() {
       </div>
 
       {fileUrl && fileType === "video" && (
-        <video
-          key={fileUrl} // Force recreation of element
-          ref={videoRef}
-          src={fileUrl}
-          controls
-          playsInline
-          webkit-playsinline="true"
-          style={{ maxWidth: "100%" }}
-          onPlay={(e) => {
-            // Prevent fullscreen on mobile
-            if (e.target.requestFullscreen) {
-              e.target.requestFullscreen = null;
-            }
-          }}
-        />
+        <div>
+          <p style={{ fontSize: "14px", color: "#666", textAlign: "center", marginBottom: "10px" }}>
+            Click play to start watching
+          </p>
+          <video
+            key={fileUrl} // Force recreation of element
+            ref={videoRef}
+            src={fileUrl}
+            controls
+            playsInline
+            webkit-playsinline="true"
+            preload="metadata"
+            style={{ maxWidth: "100%" }}
+            onPlay={(e) => {
+              // Prevent fullscreen on mobile
+              if (e.target.requestFullscreen) {
+                e.target.requestFullscreen = null;
+              }
+            }}
+          />
+        </div>
       )}
 
       {fileUrl && fileType === "audio" && (
@@ -496,11 +503,15 @@ function App() {
           border: "2px solid #e9ecef"
         }}>
           <h3 style={{ margin: "0 0 15px 0", textAlign: "center" }}>Audio Player</h3>
+          <p style={{ fontSize: "14px", color: "#666", textAlign: "center", marginBottom: "15px" }}>
+            Click play to start listening
+          </p>
           <audio
             key={fileUrl} // Force recreation of element
             ref={audioRef}
             src={fileUrl}
             controls
+            preload="metadata"
             style={{ 
               width: "100%", 
               height: "40px",
@@ -508,7 +519,6 @@ function App() {
             }}
             onTimeUpdate={handleTimeUpdate}
             onLoadedMetadata={handleLoadedMetadata}
-            preload="metadata"
           />
         </div>
       )}
