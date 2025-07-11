@@ -93,11 +93,11 @@ body {
   
   /* Mobile text switching */
   .desktop-text {
-    display: none;
+    display: none !important;
   }
   
   .mobile-text {
-    display: block;
+    display: block !important;
   }
   
   /* Mobile button container */

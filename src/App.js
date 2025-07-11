@@ -450,7 +450,7 @@ function App() {
         style={{ position: "relative" }}
       >
         <p className="desktop-text">Drag & drop audio or video file here</p>
-        <p className="mobile-text">Click to select file</p>
+        <p className="mobile-text">Click to select a file</p>
         <p className="desktop-text" style={{ fontSize: "14px", color: "#666", marginTop: "10px" }}>
           Or click to select a file
         </p>
