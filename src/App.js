@@ -456,7 +456,6 @@ function App() {
           type="file"
           accept="audio/*,video/*,.wav,.mp3,.m4a,.aac,.flac,.ogg,.wma,.aiff,.alac"
           onChange={handleFileSelect}
-          capture="environment"
           style={{
             position: "absolute",
             top: 0,
