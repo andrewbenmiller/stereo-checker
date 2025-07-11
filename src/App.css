@@ -95,6 +95,17 @@ body {
   .button-container {
     max-width: calc(100vw - 30px);
     box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  /* Ensure buttons are centered on mobile */
+  .button-container button {
+    width: 100%;
+    max-width: 300px;
+    margin: 8px auto;
   }
   
   /* Improve touch targets for mobile */
@@ -113,6 +124,23 @@ body {
   img {
     max-width: 100%;
     height: auto;
+  }
+  
+  /* Prevent fullscreen triggers on mobile */
+  button {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+  
+  /* Prevent video fullscreen on mobile */
+  video {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
   
   video,

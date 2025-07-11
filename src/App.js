@@ -195,7 +195,13 @@ function App() {
     }
   };
 
-  const analyzeStereo = async () => {
+  const analyzeStereo = async (event) => {
+    // Prevent any default behavior that might trigger fullscreen
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
     if (!audioContextRef.current || !sourceNodeRef.current) {
       alert("Please load an audio/video file first");
       return;
@@ -480,8 +486,10 @@ function App() {
             display: "flex", 
             gap: "10px", 
             justifyContent: "center",
+            alignItems: "center",
             flexWrap: "wrap",
-            flexDirection: window.innerWidth <= 768 ? "column" : "row"
+            flexDirection: window.innerWidth <= 768 ? "column" : "row",
+            width: "100%"
           }}
         >
           {/* Analyze button */}
