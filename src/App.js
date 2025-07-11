@@ -83,6 +83,20 @@ function App() {
     event.preventDefault();
   };
 
+  const handleTimeUpdate = () => {
+    const mediaElement = fileType === "video" ? videoRef.current : audioRef.current;
+    if (mediaElement) {
+      // This function can be used for custom time tracking if needed
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    const mediaElement = fileType === "video" ? videoRef.current : audioRef.current;
+    if (mediaElement) {
+      // This function can be used for custom metadata handling if needed
+    }
+  };
+
   useEffect(() => {
     if (!fileUrl) return;
 
@@ -132,8 +146,7 @@ function App() {
     stereoGain.connect(audioContext.destination);
     setIsMono(false);
 
-    // Don't auto-play - let user control playback
-    // mediaElement.play();
+    mediaElement.play();
 
     // Cleanup: disconnect nodes but DO NOT close audio context
     return () => {
@@ -402,54 +415,76 @@ function App() {
       )}
 
       {fileUrl && fileType === "audio" && (
-        <audio
-          key={fileUrl} // Force recreation of element
-          ref={audioRef}
-          src={fileUrl}
-          controls
-          style={{ width: "100%" }}
-        />
+        <div style={{ 
+          marginTop: "20px", 
+          padding: "20px", 
+          backgroundColor: "#f8f9fa", 
+          borderRadius: "8px",
+          border: "2px solid #e9ecef"
+        }}>
+          <h3 style={{ margin: "0 0 15px 0", textAlign: "center" }}>Audio Player</h3>
+          <audio
+            key={fileUrl} // Force recreation of element
+            ref={audioRef}
+            src={fileUrl}
+            controls
+            style={{ 
+              width: "100%", 
+              height: "40px",
+              borderRadius: "4px"
+            }}
+            onTimeUpdate={handleTimeUpdate}
+            onLoadedMetadata={handleLoadedMetadata}
+          />
+        </div>
       )}
 
+      {/* Button container */}
       {fileUrl && (
-        <button
-          onClick={analyzeStereo}
-          disabled={isAnalyzing}
-          style={{ 
-            marginTop: "20px", 
-            padding: "10px",
-            backgroundColor: isAnalyzing ? "#ccc" : "#000000",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: isAnalyzing ? "not-allowed" : "pointer",
-            fontSize: "16px",
-            fontWeight: "bold",
-            width: "200px"
-          }}
-        >
-          {isAnalyzing ? "Analyzing..." : "Analyze Stereo Content"}
-        </button>
-      )}
+        <div style={{ 
+          marginTop: "20px", 
+          display: "flex", 
+          gap: "10px", 
+          justifyContent: "center",
+          flexWrap: "wrap"
+        }}>
+          {/* Analyze button */}
+          <button
+            onClick={analyzeStereo}
+            disabled={isAnalyzing}
+            style={{ 
+              padding: "10px",
+              backgroundColor: isAnalyzing ? "#ccc" : "#000000",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: isAnalyzing ? "not-allowed" : "pointer",
+              fontSize: "16px",
+              fontWeight: "bold",
+              width: "200px"
+            }}
+          >
+            {isAnalyzing ? "Analyzing..." : "Analyze Stereo Content"}
+          </button>
 
-      {fileUrl && (
-        <button
-          onClick={toggleMono}
-          style={{ 
-            marginTop: "10px", 
-            padding: "10px",
-            backgroundColor: "#000000",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "16px",
-            fontWeight: "bold",
-            width: "200px"
-          }}
-        >
-          {isMono ? "Listen in Stereo" : "Listen in Mono"}
-        </button>
+          {/* Listen in Mono/Stereo button */}
+          <button
+            onClick={toggleMono}
+            style={{ 
+              padding: "10px",
+              backgroundColor: "#000000",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontSize: "16px",
+              fontWeight: "bold",
+              width: "200px"
+            }}
+          >
+            {isMono ? "Listen in Stereo" : "Listen in Mono"}
+          </button>
+        </div>
       )}
 
       {/* Analysis progress */}
@@ -614,18 +649,6 @@ function App() {
             </p>
           </div>
         )}
-      </div>
-
-      {/* Copyright footer */}
-      <div style={{ 
-        marginTop: "30px", 
-        paddingTop: "20px", 
-        borderTop: "1px solid #eee",
-        textAlign: "center",
-        fontSize: "12px",
-        color: "#666"
-      }}>
-        © 2025 Glue Factory Music. All rights reserved.
       </div>
     </div>
   );
